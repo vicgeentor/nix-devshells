@@ -15,6 +15,7 @@
         devShells.default = pkgs.mkShell {
           packages = [
             (pkgs.agda.withPackages (p: [ p.standard-library ]))
+            pkgs.cornelis
           ];
         };
       }
