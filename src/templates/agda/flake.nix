@@ -17,6 +17,7 @@
             (pkgs.agda.withPackages (p: [
               p.standard-library
             ]))
+            pkgs.ghc
           ];
         };
       }
