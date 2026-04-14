@@ -1,29 +1,34 @@
 {
-  inputs.nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    systems.url = "github:nix-systems/default";
+  };
 
   outputs =
-    { nixpkgs, ... }:
-    let
-      supportedSystems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "x86_64-darwin"
-        "aarch64-darwin"
-      ];
-      forEachSupportedSystem =
-        f:
-        nixpkgs.lib.genAttrs supportedSystems (
-          system:
-          f {
-            pkgs = import nixpkgs { inherit system; };
-          }
-        );
-    in
-    {
-      devShells = forEachSupportedSystem (
-        { pkgs }:
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = import inputs.systems;
+      perSystem =
+        { pkgs, ... }:
         {
-          default = pkgs.mkShell {
+          packages.default = pkgs.stdenv.mkDerivation {
+            pname = "CHANGE_ME";
+            version = "0.0.1";
+            src = ./.;
+
+            # Either specify buildPhase and installPhase here or use a Makefile
+            # with build and install instructions.
+            # E.g.,
+            # buildPhase = ''
+            #   make
+            # '';
+            # installPhase = ''
+            #   mkdir -p $out/bin
+            #   cp default_pname $out/bin/
+            # '';
+          };
+          devShells.default = pkgs.mkShell {
             packages = with pkgs; [
               gcc
               clang
@@ -49,28 +54,6 @@
               cat .clangd
             '';
           };
-        }
-      );
-      packages = forEachSupportedSystem (
-        { pkgs }:
-        {
-          default = pkgs.stdenv.mkDerivation {
-            pname = "default_pname";
-            version = "0.0.1";
-            src = ./.;
-
-            # Either specify buildPhase and installPhase here or use a Makefile
-            # with build and install instructions.
-            # E.g.,
-            # buildPhase = ''
-            #   make
-            # '';
-            # installPhase = ''
-            #   mkdir -p $out/bin
-            #   cp default_pname $out/bin/
-            # '';
-          };
-        }
-      );
+        };
     };
 }

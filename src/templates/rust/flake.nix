@@ -13,11 +13,15 @@
         { pkgs, ... }:
         {
           devShells.default = pkgs.mkShell {
-            packages = with pkgs; [
-              nodejs
-              typescript-language-server
-              yarn
+            buildInputs = with pkgs; [
+              cargo
+              clippy
+              rustc
+              rustfmt
+              rust-analyzer
             ];
+            nativeBuildInputs = [ pkgs.pkg-config ];
+            env.RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
           };
         };
     };

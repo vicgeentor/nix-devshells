@@ -1,25 +1,25 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    systems.url = "github:nix-systems/default";
   };
 
   outputs =
     inputs:
-    inputs.flake-utils.lib.eachDefaultSystem (
-      system:
-      let
-        pkgs = inputs.nixpkgs.legacyPackages.${system};
-      in
-      {
-        devShells.default = pkgs.mkShell {
-          packages = [
-            (pkgs.agda.withPackages (p: [
-              p.standard-library
-            ]))
-            pkgs.ghc
-          ];
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = import inputs.systems;
+      perSystem =
+        { pkgs, ... }:
+        {
+          devShells.default = pkgs.mkShell {
+            packages = [
+              (pkgs.agda.withPackages (p: [
+                p.standard-library
+              ]))
+              pkgs.ghc
+            ];
+          };
         };
-      }
-    );
+    };
 }
