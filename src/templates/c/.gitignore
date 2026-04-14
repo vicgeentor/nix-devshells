@@ -1,3 +1,10 @@
 .direnv
 result
 .clangd
+*.o
+*.obj
+build/
+Build/
+build-*/
+CMakeFiles/
+CMakeCache.txt
