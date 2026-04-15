@@ -1,48 +1,41 @@
 {
   description = "Some nice and instantly retrievable Nix devshell templates ";
 
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    systems.url = "github:nix-systems/default";
+  };
+
   outputs =
-    { nixpkgs, ... }:
-    let
-      supportedSystems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "x86_64-darwin"
-        "aarch64-darwin"
-      ];
-      forEachSupportedSystem =
-        f:
-        nixpkgs.lib.genAttrs supportedSystems (
-          system:
-          f {
-            pkgs = import nixpkgs { inherit system; };
-          }
-        );
-    in
-    {
-      packages = forEachSupportedSystem (
-        { pkgs }:
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = import inputs.systems;
+      perSystem =
+        { pkgs, ... }:
         {
-          default = pkgs.stdenv.mkDerivation {
-            pname = "mydev";
-            version = "0.1";
-            src = ./src;
+          packages = rec {
+            givenv = pkgs.stdenv.mkDerivation {
+              pname = "givenv";
+              version = "0.1";
+              src = ./src;
 
-            dontConfigure = true;
-            dontBuild = true;
+              dontConfigure = true;
+              dontBuild = true;
 
-            installPhase = ''
-              mkdir -p $out/bin
+              installPhase = ''
+                mkdir -p $out/bin
 
-              cp -r $src/templates $out
+                cp -r $src/templates $out
 
-              cp $src/mydev.sh ./mydev.tmp
-              substituteInPlace ./mydev.tmp \
-                --replace-quiet "@template_dir@" "$out/templates"
-              install -m755 ./mydev.tmp $out/bin/mydev
-            '';
+                cp $src/givenv.sh ./givenv.tmp
+                substituteInPlace ./givenv.tmp \
+                  --replace-quiet "@template_dir@" "$out/templates"
+                install -m755 ./givenv.tmp $out/bin/givenv
+              '';
+            };
+            default = givenv;
           };
-        }
-      );
+        };
     };
 }
