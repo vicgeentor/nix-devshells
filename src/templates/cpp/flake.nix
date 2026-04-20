@@ -37,6 +37,7 @@
                 packages = with pkgs; [
                   bear # run `bear -- make` to generate compile_commands.json for clangd to work
                   clang-tools
+                  gdb
                   gnumake
                 ];
               };
