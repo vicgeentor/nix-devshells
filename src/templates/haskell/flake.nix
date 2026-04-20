@@ -16,8 +16,8 @@
         in
         {
           packages = rec {
-            hattier = pkg;
-            default = hattier;
+            CHANGE_ME = pkg;
+            default = CHANGE_ME;
           };
           devShells.default = pkgs.haskellPackages.shellFor {
             packages = _: [ pkg ];
