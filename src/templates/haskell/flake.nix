@@ -6,7 +6,10 @@
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -14,6 +17,7 @@
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
         inputs.git-hooks-nix.flakeModule
+        inputs.treefmt-nix.flakeModule
       ];
 
       systems = [ "x86_64-linux" ];
@@ -40,6 +44,16 @@
 
           pre-commit.settings = {
             hooks = {
+              nixfmt.enable = true;
+              cabal-fmt.enable = true;
+              ormolu.enable = true;
+              hlint.enable = true;
+            };
+          };
+
+          treefmt = {
+            projectRootFile = "flake.nix";
+            programs = {
               nixfmt.enable = true;
               cabal-fmt.enable = true;
               ormolu.enable = true;
