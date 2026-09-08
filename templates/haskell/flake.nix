@@ -2,10 +2,6 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    git-hooks-nix = {
-      url = "github:cachix/git-hooks.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -16,7 +12,6 @@
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
-        inputs.git-hooks-nix.flakeModule
         inputs.treefmt-nix.flakeModule
       ];
 
@@ -39,16 +34,6 @@
               haskell-language-server
               hlint
             ];
-            shellHook = config.pre-commit.shellHook;
-          };
-
-          pre-commit.settings = {
-            hooks = {
-              nixfmt.enable = true;
-              cabal-fmt.enable = true;
-              ormolu.enable = true;
-              hlint.enable = true;
-            };
           };
 
           treefmt = {
