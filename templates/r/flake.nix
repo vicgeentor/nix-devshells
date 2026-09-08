@@ -14,11 +14,11 @@
         let
           R-with-packages = pkgs.rWrapper.override {
             packages = with pkgs.rPackages; [
-              rmarkdown
-              tidyverse
               ggplot2
               ggpubr
-              languageserver
+              rmarkdown
+              styler
+              tidyverse
             ];
           };
         in
